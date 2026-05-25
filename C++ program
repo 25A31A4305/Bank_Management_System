@@ -1,0 +1,140 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+class Bank {
+    string accNo, name;
+    double balance;
+
+public:
+    Bank(string a, string n, double b) {
+        accNo = a;
+        name = n;
+        balance = b;
+    }
+
+    string getAccNo() { return accNo; }
+
+    void deposit(double amt) {
+        if (amt > 0) {
+            balance += amt;
+            cout << "\nDeposit Successful!\nBalance: $" 
+                 << fixed << setprecision(2) << balance << endl;
+        }
+    }
+
+    void withdraw(double amt) {
+        if (amt <= balance && amt > 0) {
+            balance -= amt;
+            cout << "\nWithdrawal Successful!\nBalance: $" 
+                 << fixed << setprecision(2) << balance << endl;
+        } else {
+            cout << "\nInsufficient Balance!" << endl;
+        }
+    }
+
+    void display() {
+        cout << "\nAccount Number : " << accNo;
+        cout << "\nAccount Holder : " << name;
+        cout << "\nBalance        : $" 
+             << fixed << setprecision(2) << balance << endl;
+    }
+
+    void save(ofstream &out) {
+        out << accNo << " " << name << " " << balance << endl;
+    }
+};
+
+void saveFile(vector<Bank> &acc) {
+    ofstream out("bank.txt");
+    for (auto &a : acc)
+        a.save(out);
+}
+
+int main() {
+    vector<Bank> acc;
+    int ch;
+    string no, name;
+    double amt;
+
+    do {
+        cout << "\n====== BANK MANAGEMENT SYSTEM ======";
+        cout << "\n1.Create Account";
+        cout << "\n2.Deposit";
+        cout << "\n3.Withdraw";
+        cout << "\n4.Check Balance";
+        cout << "\n5.Exit";
+        cout << "\nEnter choice: ";
+        cin >> ch;
+
+        switch (ch) {
+
+        case 1:
+            cout << "\nEnter Account Number: ";
+            cin >> no;
+
+            cout << "Enter Name: ";
+            cin >> ws;
+            getline(cin, name);
+
+            cout << "Enter Balance: ";
+            cin >> amt;
+
+            acc.push_back(Bank(no, name, amt));
+            saveFile(acc);
+
+            cout << "\nAccount Created Successfully!" << endl;
+            break;
+
+        case 2:
+            cout << "\nEnter Account Number: ";
+            cin >> no;
+
+            for (auto &a : acc) {
+                if (a.getAccNo() == no) {
+                    cout << "Enter Deposit Amount: ";
+                    cin >> amt;
+                    a.deposit(amt);
+                    saveFile(acc);
+                }
+            }
+            break;
+
+        case 3:
+            cout << "\nEnter Account Number: ";
+            cin >> no;
+
+            for (auto &a : acc) {
+                if (a.getAccNo() == no) {
+                    cout << "Enter Withdraw Amount: ";
+                    cin >> amt;
+                    a.withdraw(amt);
+                    saveFile(acc);
+                }
+            }
+            break;
+
+        case 4:
+            cout << "\nEnter Account Number: ";
+            cin >> no;
+
+            for (auto &a : acc) {
+                if (a.getAccNo() == no)
+                    a.display();
+            }
+            break;
+
+        case 5:
+            cout << "\nThank You!" << endl;
+            break;
+
+        default:
+            cout << "\nInvalid Choice!" << endl;
+        }
+
+    } while (ch != 5);
+
+    return 0;
+}
